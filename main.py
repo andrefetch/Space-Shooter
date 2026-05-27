@@ -9,8 +9,13 @@ display_surace = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Space Shooter')
 running = True
 
-# Create surface
+# Create plain surface
 surf = pygame.Surface(( 100, 200 ))
+surf.fill('orange')
+x = 100
+
+# Importing Images
+player_surf = pygame.image.load('sprites/ship.png')
 
 # Drawing Screen
 while running:
@@ -23,7 +28,8 @@ while running:
 
     # draw the game
     display_surace.fill('darkgray')
-    display_surace.blit(surf)
+    x += 1
+    display_surace.blit(surf, ( x, 150 ))
     pygame.display.update()
 
 pygame.quit()
