@@ -2,6 +2,12 @@ import pygame
 from os.path import join
 from random import randint
 
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load(join('sprites', 'player.png')).convert_alpha()
+        self.rect = self.image.get_frect(center = (WIDTH / 2, HEIGHT / 2))
+
 # General Setup
 pygame.init() 
 WIDTH = 1280
@@ -17,11 +23,13 @@ surf = pygame.Surface(( 100, 200 ))
 surf.fill('orange')
 x = 100
 
+player = Player()
+
 # Player
-player_surf = pygame.image.load(join('sprites', 'player.png')).convert_alpha()
-player_rect = player_surf.get_frect(center = (WIDTH / 2, HEIGHT / 2))
-player_direction = pygame.math.Vector2()
-player_speed = 300
+# player_surf = pygame.image.load(join('sprites', 'player.png')).convert_alpha()
+# player_rect = player_surf.get_frect(center = (WIDTH / 2, HEIGHT / 2))
+# player_direction = pygame.math.Vector2()
+# player_speed = 300
 
 # Stars
 star_surf = pygame.image.load(join('sprites', 'star.png')).convert_alpha()
@@ -57,10 +65,14 @@ while running:
         
     # input
     keys = pygame.key.get_pressed()
-    player_direction.x = int(keys[pygame.K_d]) - int(keys[pygame.K_a])
-    player_direction.y = int(keys[pygame.K_s]) - int(keys[pygame.K_w])
-    player_direction = player_direction.normalize() if player_direction else player_direction
-    player_rect.center += player_direction * player_speed * dt
+    # player_direction.x = int(keys[pygame.K_d]) - int(keys[pygame.K_a])
+    # player_direction.y = int(keys[pygame.K_s]) - int(keys[pygame.K_w])
+    # player_direction = player_direction.normalize() if player_direction else player_direction
+    # player_rect.center += player_direction * player_speed * dt
+
+    recent_keys = pygame.key.get_just_pressed()
+    if recent_keys[pygame.K_SPACE]:
+        print("Laser!")
 
 
     # draw the game, drawing matters in lines, display background first, then stars, then ship
@@ -76,8 +88,8 @@ while running:
 
     display_surface.blit(asteroid_surf, asteroid_rect)
     display_surface.blit(laser_surf, laser_rect)
-    display_surface.blit(player_surf, player_rect)
-
+    # display_surface.blit(player_surf, player_rect)
+    display_surface.blit(player.image, player.rect)
     pygame.display.update()
 
 pygame.quit()
