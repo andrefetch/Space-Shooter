@@ -9,6 +9,18 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_frect(center = (WIDTH / 2, HEIGHT / 2))
         self.direction = pygame.Vector2()
         self.speed = 300
+
+        # Timer / Cooldown 
+        self.can_shoot = True
+        self.laser_shoot_time = 0
+        self.cooldown_duration = 400 # In MS
+    
+    def laser_timer(self):
+        if not self.can_shoot:
+            current_time = pygame.time.get_ticks()
+            # Debug : print(current_time)
+            if current_time - self.laser_shoot_time >= self.cooldown_duration:
+                self.can_shoot = True
     
     def update(self, dt):
         keys = pygame.key.get_pressed()
@@ -18,8 +30,12 @@ class Player(pygame.sprite.Sprite):
         self.rect.center += self.direction * self.speed * dt
 
         recent_keys = pygame.key.get_just_pressed()
-        if recent_keys[pygame.K_SPACE]:
+        if recent_keys[pygame.K_SPACE] and self.can_shoot:
             print('fire laser')
+            self.can_shoot = False
+            self.laser_shoot_time = pygame.time.get_ticks()
+        
+        self.laser_timer()
 
 class Star(pygame.sprite.Sprite):
     def __init__(self, groups):
@@ -54,7 +70,6 @@ x = 100
 star_sprites = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 
-star_surf = 
 for _ in range(40):
     Star([star_sprites, all_sprites])
 
@@ -72,6 +87,10 @@ laser_rect = laser_surf.get_frect(bottomleft = (20, HEIGHT - 20))
 background_surf = pygame.image.load(join('sprites', 'background.png'))
 background_surf = pygame.transform.scale(background_surf, (WIDTH, HEIGHT))
 
+# Custom events -- Meteors / Asteroids
+asteroid_event = pygame.event.custom_type()
+pygame.time.set_timer(asteroid_event, 500)
+
 # Drawing Screen
 while running:
 
@@ -81,6 +100,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == asteroid_event:
+            print('create asteroid')
         
     # input
     keys = pygame.key.get_pressed()
