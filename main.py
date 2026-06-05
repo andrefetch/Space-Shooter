@@ -31,7 +31,7 @@ class Player(pygame.sprite.Sprite):
 
         recent_keys = pygame.key.get_just_pressed()
         if recent_keys[pygame.K_SPACE] and self.can_shoot:
-            print('fire laser')
+            Laser(laser_surf, self.rect.midtop, all_sprites)
             self.can_shoot = False
             self.laser_shoot_time = pygame.time.get_ticks()
         
@@ -52,6 +52,23 @@ class Star(pygame.sprite.Sprite):
             self.rect.bottom = 0
             self.rect.x = randint(0, WIDTH)
 
+class Laser(pygame.sprite.Sprite):
+    def __init__(self, surf, pos, groups):
+        super().__init__(groups)
+        self.image = surf
+        self.rect = self.image.get_frect(midbottom = pos)
+    
+    def update(self, dt):
+        self.rect.centery -= 400 * dt
+        if self.rect.bottom < 0:
+            self.kill()
+
+class Asteroid(pygame.sprite.Sprite):
+    def __init__(self, surf, pos, groups):
+        super().__init__(groups)
+        self.image = surf
+        self.rect = self.image.get_frect(center = pos)
+
 # General Setup
 pygame.init() 
 WIDTH = 1280
@@ -61,11 +78,6 @@ display_surface = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Space Shooter')
 running = True
 clock = pygame.time.Clock()
-
-# Create plain surface
-surf = pygame.Surface(( 100, 200 ))
-surf.fill('orange')
-x = 100
 
 star_sprites = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
@@ -77,11 +89,9 @@ player = Player(all_sprites)
 
 # Asteroid
 asteroid_surf = pygame.image.load(join('sprites', 'asteroid.png')).convert_alpha()
-asteroid_rect = asteroid_surf.get_frect(center = (WIDTH / 2, HEIGHT / 2))
 
 # Laser
 laser_surf = pygame.image.load(join('sprites', 'laser.png')).convert_alpha()
-laser_rect = laser_surf.get_frect(bottomleft = (20, HEIGHT - 20))
 
 # Background
 background_surf = pygame.image.load(join('sprites', 'background.png'))
