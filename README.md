@@ -1,1 +1,39 @@
-![SpaceShooterArt](sprites/preview/render.png)
+# Space Shooter
+
+![SpaceShooterArt](sprites/preview/new_render.png)
+
+## Description
+
+Space shooter is a top-down recreation of a popular game called "Asteroids" it contains a ship that can be controlled, a laser that can be shot, and asteroids to break apart!
+
+## How to play?
+
+It's a pretty easy game to play you can use "WASD" for movement and "Space" to shoot your laser at asteroids!
+
+## How do I compile it to play?
+
+1. Clone the repo by:
+
+   ```bash
+   $ git clone https://github.com/andrefetch/SpaceShooter.git
+   ```
+
+   in your terminal emulator of choice
+
+2. Install python from [here!](https://www.python.org/)
+
+3. Install UV using your terminal by:
+
+   **Linux / MacOS:**
+
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+   **Windows:**
+
+   ```powershell
+   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+   ```
+
+4. Open the terminal in it's root directory of the cloned folder you have which would be `Space-Shooter/` and run `uv run main.py` and you're all set!
