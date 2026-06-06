@@ -1,1 +1,1 @@
-![SpaceShooterArt](sprites/preview/render.png)
+![SpaceShooterArt](sprites/preview/new_render.png)
