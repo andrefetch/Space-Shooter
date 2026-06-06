@@ -14,7 +14,11 @@ class Player(pygame.sprite.Sprite):
         self.can_shoot = True
         self.laser_shoot_time = 0
         self.cooldown_duration = 400 # In MS
-    
+
+        # Mask
+        self.mask = pygame.mask.from_surface(self.image)
+        
+
     def laser_timer(self):
         if not self.can_shoot:
             current_time = pygame.time.get_ticks()
@@ -58,6 +62,9 @@ class Laser(pygame.sprite.Sprite):
         self.image = surf
         self.rect = self.image.get_frect(midbottom = pos)
     
+        # Mask
+        self.mask = pygame.mask.from_surface(self.image)
+    
     def update(self, dt):
         self.rect.centery -= 400 * dt
         if self.rect.bottom < 0:
@@ -72,6 +79,9 @@ class Asteroid(pygame.sprite.Sprite):
         self.lifetime = 3000
         self.direction = pygame.Vector2(uniform(-0.5, 0.5), 1)
         self.speed = randint(400, 500)
+
+        # Mask
+        self.mask = pygame.mask.from_surface(self.image)
     
     def update(self, dt: float):
         self.rect.center += self.direction * self.speed * dt
