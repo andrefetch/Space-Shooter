@@ -13,6 +13,12 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.Vector2()
         self.speed = 300
 
+        # Lives attributes
+        self.lives = 3
+        self.invincible = False
+        self.hit_time = 0
+        self.invincible_duration = 0
+
         # Dependencies the player needs in order to fire a laser.
         # Passed in instead of grabbed from globals.
         self.laser_surf = laser_surf
@@ -51,6 +57,18 @@ class Player(pygame.sprite.Sprite):
             self.laser_sound.play()
 
         self.laser_timer()
+    
+    def invincibility_timer(self):
+        if self.invincible:
+            if pygame.time.get_ticks() - self.hit_time >= self.invincible_duration:
+                self.invincible = False
+                self.image.set_alpha(255)
+    
+    def take_damage(self):
+        if not self.invincible:
+            self.lives -= 1
+            self.invincible = True
+            self.hit_time = pygame.time.get_ticks()
 
 
 class Star(pygame.sprite.Sprite):
