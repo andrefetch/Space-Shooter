@@ -34,7 +34,7 @@ def collisions():
         if pygame.sprite.spritecollide(player, asteroid_sprites, True, pygame.sprite.collide_mask):
             player.take_damage()
             if player.lives <= 0:
-                game_state = "title"
+                game_state = "loss"
                 pygame.time.set_timer(asteroid_event, 0) # Stop asteroids from spawning.
 
     for laser in laser_sprites:
@@ -63,6 +63,15 @@ def display_title():
         prompt_rect = prompt_surf.get_frect(center=(WIDTH / 2, HEIGHT / 2 + 40))
         display_surface.blit(prompt_surf, prompt_rect)
 
+def display_loss():
+    title_surf = title_font.render("Outta Lives!", False, "#d4d4d4")
+    title_rect = title_surf.get_frect(center = (WIDTH / 2, HEIGHT / 2 - 60))
+    display_surface.blit(title_surf, title_rect)
+
+    prompt_surf = font.render("Press SPACE to restart!", False, "#d4d4d4")
+    prompt_rect = prompt_surf.get_frect(center = (WIDTH / 2, HEIGHT / 2 + 40))
+    display_surface.blit(prompt_surf, prompt_rect)
+
 def display_lives():
     text_surf = font.render(f"Lives: {player.lives}", False, "#d4d4d4")
     text_rect = text_surf.get_frect(topleft = (20, 20))
@@ -75,7 +84,7 @@ pygame.display.set_caption('Space Shooter')
 running = True
 clock = pygame.time.Clock()
 
-# Asset loading
+# Assets loading
 asteroid_surf = pygame.image.load(join('sprites', 'asteroid.png')).convert_alpha()
 laser_surf = pygame.image.load(join('sprites', 'laser.png')).convert_alpha()
 background_surf = pygame.image.load(join('sprites', 'background.png'))
@@ -96,7 +105,7 @@ laser_sound.set_volume(0.2)
 explosion_sound.set_volume(0.2)
 game_music_sound.set_volume(0.1)
 game_music_sound.play(loops=-1)
-damage_sound.set_volume(0.2)
+damage_sound.set_volume(0.5)
 
 # Sprite groups
 all_sprites = pygame.sprite.Group()
@@ -131,6 +140,10 @@ while running:
             if event.type == asteroid_event:
                 x, y = randint(0, WIDTH), randint(-200, -100)
                 Asteroid(asteroid_surf, (x, y), (all_sprites, asteroid_sprites))
+        
+        elif game_state == "loss":
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                start_game()
 
     # update + draw, branching on which state we're in
     display_surface.blit(background_surf, (0, 0))
@@ -147,6 +160,11 @@ while running:
         star_sprites.draw(display_surface)
         display_score()
         all_sprites.draw(display_surface)
+    
+    elif game_state == "loss":
+        star_sprites.update(dt)
+        star_sprites.draw(display_surface)
+        display_loss()
 
     pygame.display.update()
 
