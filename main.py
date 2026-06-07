@@ -26,6 +26,13 @@ def start_game():
     game_start_time = pygame.time.get_ticks()
     game_state = "playing"
 
+def stop_game():
+
+    global final_score, game_state
+
+    final_score = (pygame.time.get_ticks() - game_start_time) // 100
+    game_state = 'loss'
+
 
 def collisions():
     global game_state
@@ -34,7 +41,7 @@ def collisions():
         if pygame.sprite.spritecollide(player, asteroid_sprites, True, pygame.sprite.collide_mask):
             player.take_damage()
             if player.lives <= 0:
-                game_state = "loss"
+                stop_game()
                 pygame.time.set_timer(asteroid_event, 0) # Stop asteroids from spawning.
 
     for laser in laser_sprites:
@@ -52,7 +59,6 @@ def display_score():
     display_surface.blit(text_surf, text_rect)
     pygame.draw.rect(display_surface, "#d4d4d4", text_rect.inflate(20, 30), 5, 10)
 
-
 def display_title():
     title_surf = title_font.render("SPACE SHOOTER", False, "#d4d4d4")
     title_rect = title_surf.get_frect(center=(WIDTH / 2, HEIGHT / 2 - 60))
@@ -68,8 +74,12 @@ def display_loss():
     title_rect = title_surf.get_frect(center = (WIDTH / 2, HEIGHT / 2 - 60))
     display_surface.blit(title_surf, title_rect)
 
+    score_surf = font.render(f"Your score was: {final_score}", False, "#bdff91")
+    score_rect = score_surf.get_frect(center = (WIDTH / 2, HEIGHT / 2 + 20))
+    display_surface.blit(score_surf, score_rect)
+
     prompt_surf = font.render("Press SPACE to restart!", False, "#d4d4d4")
-    prompt_rect = prompt_surf.get_frect(center = (WIDTH / 2, HEIGHT / 2 + 40))
+    prompt_rect = prompt_surf.get_frect(center = (WIDTH / 2, HEIGHT / 2 + 80))
     display_surface.blit(prompt_surf, prompt_rect)
 
 def display_lives():
