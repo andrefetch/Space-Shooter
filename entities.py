@@ -192,3 +192,8 @@ class PowerUp(pygame.sprite.Sprite):
     
     def apply(self, player):
         raise NotImplementedError # so each child class can define it's own effect
+    
+class ExtraLifePowerUp(PowerUp):
+    def apply(self, player):
+        player.lives += 1
+        return f"Extra Life: {player.lives} Lives Now!"

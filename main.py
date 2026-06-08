@@ -1,9 +1,9 @@
 import pygame
 from os.path import join
-from random import randint
+from random import randint, choice
 
 from settings import WIDTH, HEIGHT
-from entities import Player, Star, Asteroid, AnimatedExplosion, PowerUp
+from entities import Player, Star, Asteroid, AnimatedExplosion, PowerUp, ExtraLifePowerUp
 
 
 def start_game():
@@ -53,8 +53,10 @@ def collisions():
             explosion_sound.play()
         
     for powerup in pygame.sprite.spritecollide(player, powerup_sprites, True, pygame.sprite.collide_mask):
-        powerup.apply(player)
         print(f"Debug: PowerUp Applied")
+        message = powerup.apply(player)
+        message_time = powerup.apply(player)
+        powerup.kill()
 
 
 def display_score():
@@ -135,6 +137,9 @@ powerup_sprites = pygame.sprite.Group()
 asteroid_event = pygame.event.custom_type()
 powerup_event = pygame.event.custom_type()
 
+# PowerUp Types
+POWERUP_TYPES = [ExtraLifePowerUp]
+
 # State that start_game() will fill in. Stars exist now so the title has a backdrop.
 game_state = "title"
 game_start_time = 0
@@ -161,6 +166,7 @@ while running:
                 Asteroid(asteroid_surf, (x, y), (all_sprites, asteroid_sprites))
             if event.type == powerup_event:
                 x, y = randint(0, WIDTH), randint(-200, -100)
+                powerup_cls = choice(POWERUP_TYPES)
                 PowerUp(powerup_surf, (x, y), (all_sprites, powerup_sprites))
         
         elif game_state == "loss":
