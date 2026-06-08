@@ -3,18 +3,19 @@ from os.path import join
 from random import randint
 
 from settings import WIDTH, HEIGHT
-from entities import Player, Star, Asteroid, AnimatedExplosion
+from entities import Player, Star, Asteroid, AnimatedExplosion, PowerUp
 
 
 def start_game():
     """Set up (or reset) a fresh playthrough."""
-    global player, game_start_time, game_state
+    global player, game_start_time, game_state # I know globals are a bad way to instansiate, I will figure out a better way to do it.
 
     # Clear anything left over from a previous run
     all_sprites.empty()
     star_sprites.empty()
     asteroid_sprites.empty()
     laser_sprites.empty()
+    powerup_sprites.empty()
 
     # Rebuild the scene
     for _ in range(40):
@@ -23,6 +24,7 @@ def start_game():
 
     # Start spawning asteroids and reset the score clock
     pygame.time.set_timer(asteroid_event, randint(150, 300))
+    pygame.time.set_timer(powerup_event, randint(5000, 10000))
     game_start_time = pygame.time.get_ticks()
     game_state = "playing"
 
@@ -49,6 +51,10 @@ def collisions():
             laser.kill()
             AnimatedExplosion(explosion_frames, laser.rect.midtop, all_sprites)
             explosion_sound.play()
+        
+    for powerup in pygame.sprite.spritecollide(player, powerup_sprites, True, pygame.sprite.collide_mask):
+        powerup.apply(player)
+        print(f"Debug: PowerUp Applied")
 
 
 def display_score():
@@ -100,6 +106,7 @@ laser_surf = pygame.image.load(join('sprites', 'laser.png')).convert_alpha()
 background_surf = pygame.image.load(join('sprites', 'background.png'))
 background_surf = pygame.transform.scale(background_surf, (WIDTH, HEIGHT))
 explosion_frames = [pygame.image.load(join('sprites', 'explosion', f'{i}.png')).convert_alpha() for i in range(12)]
+powerup_surf = pygame.image.load(join('sprites', 'powerup', 'luckyblock.png'))
 
 # Fonts
 font = pygame.font.Font(join('sprites', 'HomeVideo.ttf'), 40)
@@ -122,9 +129,11 @@ all_sprites = pygame.sprite.Group()
 star_sprites = pygame.sprite.Group()
 asteroid_sprites = pygame.sprite.Group()
 laser_sprites = pygame.sprite.Group()
+powerup_sprites = pygame.sprite.Group()
 
 # Custom event -- Meteors / Asteroids
 asteroid_event = pygame.event.custom_type()
+powerup_event = pygame.event.custom_type()
 
 # State that start_game() will fill in. Stars exist now so the title has a backdrop.
 game_state = "title"
@@ -150,6 +159,9 @@ while running:
             if event.type == asteroid_event:
                 x, y = randint(0, WIDTH), randint(-200, -100)
                 Asteroid(asteroid_surf, (x, y), (all_sprites, asteroid_sprites))
+            if event.type == powerup_event:
+                x, y = randint(0, WIDTH), randint(-200, -100)
+                PowerUp(powerup_surf, (x, y), (all_sprites, powerup_sprites))
         
         elif game_state == "loss":
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:

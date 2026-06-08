@@ -161,22 +161,34 @@ class AnimatedExplosion(pygame.sprite.Sprite):
         else:
             self.kill()
 
-'''
-Powerups
-'''
-
 class PowerUp(pygame.sprite.Sprite):
 
-    image_path = None
-
-    def __init__(self, pos, groups): 
+    def __init__(self, surf, pos, groups): 
         super().__init__(groups)
-        self.image = pygame.image.load(self.image_path).convert_alpha()
+        self.orig_image = surf
+        self.image = self.orig_image
         self.rect = self.image.get_frect(center = pos)
-        self.velocity = pygame.Vector2(0, 50)
+        self.start_time = pygame.time.get_ticks()
+        self.lifetime = 3000
+        self.direction = pygame.Vector2(uniform(-0.5, 0.5), 1)
+        self.speed = randint(100, 300) # Slower than an asteroid, since we would want a player to get the power up.
+        self.rotation = 0
+        self.rotation_speed = randint(10, 30)
+        
+        # We mask here because the image is 128x128 with whitespace, causing bad 
+        self.mask = pygame.mask.from_surface(self.image)
     
     def update(self, dt):
-        self.rect.center += self.velocity * dt
+        self.rect.center += self.direction * self.speed * dt
+
+        # This is so if it's offscreen it'll kill the spawned sprite so it doesn't use too much memory
+        if pygame.time.get_ticks() - self.start_time >= self.lifetime:
+            self.kill()
+        
+        # Rotations
+        self.rotation += self.rotation_speed * dt
+        self.image = pygame.transform.rotozoom(self.orig_image, self.rotation, 1)
+        self.rect = self.image.get_frect(center = self.rect.center)
     
     def apply(self, player):
         raise NotImplementedError # so each child class can define it's own effect
