@@ -196,4 +196,4 @@ class PowerUp(pygame.sprite.Sprite):
 class ExtraLifePowerUp(PowerUp):
     def apply(self, player):
         player.lives += 1
-        return f"Extra Life: {player.lives} Lives Now!"
+        return f"Extra Life!"

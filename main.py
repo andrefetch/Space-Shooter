@@ -37,7 +37,7 @@ def stop_game():
 
 
 def collisions():
-    global game_state
+    global game_state, powerup_message, message_time
 
     if not player.invincible:
         if pygame.sprite.spritecollide(player, asteroid_sprites, True, pygame.sprite.collide_mask):
@@ -54,10 +54,9 @@ def collisions():
         
     for powerup in pygame.sprite.spritecollide(player, powerup_sprites, True, pygame.sprite.collide_mask):
         print(f"Debug: PowerUp Applied")
-        message = powerup.apply(player)
-        message_time = powerup.apply(player)
+        powerup_message = powerup.apply(player)
+        message_time = pygame.time.get_ticks()
         powerup.kill()
-
 
 def display_score():
     # Score is now time since THIS game started, not since the program launched
@@ -94,6 +93,12 @@ def display_lives():
     text_surf = font.render(f"Lives: {player.lives}", False, "#d4d4d4")
     text_rect = text_surf.get_frect(topleft = (20, 20))
     display_surface.blit(text_surf, text_rect)
+
+def display_powerup_message():
+    if powerup_message and pygame.time.get_ticks() - message_time < 1500:
+        text_surf = font.render(powerup_message, False, '#bdff91')
+        text_rect = text_surf.get_frect(center = (WIDTH / 2, 100))
+        display_surface.blit(text_surf, text_rect)
 
 # General setup
 pygame.init()
@@ -144,6 +149,8 @@ POWERUP_TYPES = [ExtraLifePowerUp]
 game_state = "title"
 game_start_time = 0
 player = None
+powerup_message = "" 
+message_time = 0
 for _ in range(40):
     Star([star_sprites, all_sprites])
 
@@ -167,7 +174,7 @@ while running:
             if event.type == powerup_event:
                 x, y = randint(0, WIDTH), randint(-200, -100)
                 powerup_cls = choice(POWERUP_TYPES)
-                PowerUp(powerup_surf, (x, y), (all_sprites, powerup_sprites))
+                powerup_cls(powerup_surf, (x, y), (all_sprites, powerup_sprites))
         
         elif game_state == "loss":
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
@@ -187,6 +194,7 @@ while running:
         display_lives()
         star_sprites.draw(display_surface)
         display_score()
+        display_powerup_message()
         all_sprites.draw(display_surface)
     
     elif game_state == "loss":
